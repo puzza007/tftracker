@@ -14,5 +14,7 @@ tftoptions = {
 	'check_intervall' :	'300',
 	# set to '1' if you want to get a notification via direct message for the specific event
 	'notify_unfollow' :	'1',
-	'notify_follow' :	'1'	
+	'notify_follow' :	'1',
+	'notify_unfriend' :	'1',
+	'notify_friend' :	'1'
 }

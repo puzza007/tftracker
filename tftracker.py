@@ -35,8 +35,10 @@ api2.send_direct_message(screen_name = SCREEN_NAME1, text = 'TFTracker started. 
 print("tracker started...")
 
 followers = api1.followers_ids(SCREEN_NAME1)
+friends = api1.friends_ids(SCREEN_NAME1)
 
 while True:
+	# follower list tracking
 	followers_old = followers
 	print("updating follower list")
 	followers = api1.followers_ids(SCREEN_NAME1)
@@ -51,6 +53,23 @@ while True:
 			f_name = api1.get_user(f).screen_name
 			print(f_name+' followed.')
 			api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user followed you: @"+f_name)
+
+	# friend list tracking
+	friends_old = friends
+	print('updating friends list')
+	friends = api1.friends_ids(SCREEN_NAME1)
+	print('comparing lists...')
+	for f in friends_old:
+		if f not in friends:
+			f_name = api1.get_user(f).screen_name
+			print(f_name+' unfriended.')
+			api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you unfollowed @'+f_name+'.')
+	for f in friends:
+		if f not in friends_old:
+			f_name = api1.get_user(f).screen_name
+			print(f_name+' friended.')
+			api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you followed @'+f_name+'.')
+
 	print('sleeping '+ str(CHECK_INTERVALL) +'s from now.')
 	time.sleep(CHECK_INTERVALL)
 
