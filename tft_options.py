@@ -2,6 +2,7 @@ tftoptions = {
 	# API keys for your registered app. get them here: https://apps.twitter.com/
 	'consumer_key' :	'',
 	'consumer_secret' :	'',
+	# you can get the account access token using tftauth.py after adding the consumer keys in this file
 	# settings for your first account. (this account will get tracked)
 	'screen_name1' :	'',
 	'access_token1' :	'',
