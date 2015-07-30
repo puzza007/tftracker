@@ -31,7 +31,7 @@ auth2 = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth2.set_access_token(ACCESS_TOKEN2, ACCESS_TOKEN_SECRET2)
 api2 = tweepy.API(auth2)
 
-api2.send_direct_message(screen_name = SCREEN_NAME1, text = 'TFTracker started. CHECK_INTERVALL'+ str(CHECK_INTERVALL) +'s. NOTIFY_FOLLOW='+NOTIFY_FOLLOW+'. NOTIFY_UNFOLLOW='+NOTIFY_UNFOLLOW+'.') 
+api2.send_direct_message(screen_name = SCREEN_NAME1, text = 'TFTracker started. CHECK_INTERVALL='+ str(CHECK_INTERVALL) +'s. NOTIFY_FOLLOW='+NOTIFY_FOLLOW+'. NOTIFY_UNFOLLOW='+NOTIFY_UNFOLLOW+'.') 
 print("tracker started...")
 
 followers = api1.followers_ids(SCREEN_NAME1)
@@ -43,8 +43,14 @@ while True:
 	print("comparing lists...")
 	for f in followers_old:
 		if f not in followers:
-			print(f)
-			api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user unfollowed you: @" + api1.get_user(f).screen_name)
+			f_name = api1.get_user(f).screen_name
+			print(f_name+' unfollowed.')
+			api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user unfollowed you: @"+f_name)
+	for f in followers:
+		if f not in followers_old:
+			f_name = api1.get_user(f).screen_name
+			print(f_name+' followed.')
+			api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user followed you: @"+f_name)
 	print('sleeping '+ str(CHECK_INTERVALL) +'s from now.')
 	time.sleep(CHECK_INTERVALL)
 
