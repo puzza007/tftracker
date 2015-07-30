@@ -18,6 +18,8 @@ ACCESS_TOKEN_SECRET2 = tftoptions['access_token_secret2']
 CHECK_INTERVALL = float(tftoptions['check_intervall'])
 NOTIFY_UNFOLLOW = tftoptions['notify_unfollow']
 NOTIFY_FOLLOW = tftoptions['notify_follow']
+NOTIFY_UNFRIEND = tftoptions['notify_unfriend']
+NOTIFY_FRIEND = tftoptions['notify_friend']
 
 # authentificate first account as api1
 print("authentificating first account...")
@@ -39,36 +41,41 @@ friends = api1.friends_ids(SCREEN_NAME1)
 
 while True:
 	# follower list tracking
-	followers_old = followers
-	print("updating follower list")
-	followers = api1.followers_ids(SCREEN_NAME1)
-	print("comparing lists...")
-	for f in followers_old:
-		if f not in followers:
-			f_name = api1.get_user(f).screen_name
-			print(f_name+' unfollowed.')
-			api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user unfollowed you: @"+f_name)
-	for f in followers:
-		if f not in followers_old:
-			f_name = api1.get_user(f).screen_name
-			print(f_name+' followed.')
-			api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user followed you: @"+f_name)
+	if NOTIFY_FOLLOW == '1' or NOTIFY_UNFOLLOW == '1': # check if updating follower list ist necessary to reduce api calls
+		followers_old = followers
+		print("updating follower list")
+		followers = api1.followers_ids(SCREEN_NAME1)
+		print("comparing lists...")
+		if NOTIFY_UNFOLLOW == '1':
+			for f in followers_old:
+				if f not in followers:
+					f_name = api1.get_user(f).screen_name
+					print(f_name+' unfollowed.')
+					api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user unfollowed you: @"+f_name)
+		for f in followers:
+			if f not in followers_old:
+				f_name = api1.get_user(f).screen_name
+				print(f_name+' followed.')
+				api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user followed you: @"+f_name)
 
 	# friend list tracking
-	friends_old = friends
-	print('updating friends list')
-	friends = api1.friends_ids(SCREEN_NAME1)
-	print('comparing lists...')
-	for f in friends_old:
-		if f not in friends:
-			f_name = api1.get_user(f).screen_name
-			print(f_name+' unfriended.')
-			api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you unfollowed @'+f_name+'.')
-	for f in friends:
-		if f not in friends_old:
-			f_name = api1.get_user(f).screen_name
-			print(f_name+' friended.')
-			api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you followed @'+f_name+'.')
+	if NOTIFY_FRIEND == '1' or NOTIFY_UNFRIEND == '1': # check if updating friend list is necessary to reduce api calls
+		friends_old = friends
+		print('updating friends list')
+		friends = api1.friends_ids(SCREEN_NAME1)
+		print('comparing lists...')
+		if NOTIFY_UNFRIEND == '1':
+			for f in friends_old:
+				if f not in friends:
+					f_name = api1.get_user(f).screen_name
+					print(f_name+' unfriended.')
+					api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you unfollowed @'+f_name+'.')
+		if NOTIFY_FRIEND == '1':
+			for f in friends:
+				if f not in friends_old:
+					f_name = api1.get_user(f).screen_name
+					print(f_name+' friended.')
+					api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you followed @'+f_name+'.')
 
 	print('sleeping '+ str(CHECK_INTERVALL) +'s from now.')
 	time.sleep(CHECK_INTERVALL)
