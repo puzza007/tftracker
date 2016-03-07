@@ -3,6 +3,7 @@
 from tft_options import tftoptions
 import time
 import tweepy
+import pickle
 
 # account 1 is the account that gets tracked
 # account 2 is the account that messages the first as notification
@@ -39,10 +40,21 @@ print("tracker started...")
 followers = api1.followers_ids(SCREEN_NAME1)
 friends = api1.friends_ids(SCREEN_NAME1)
 
+followersfile = open('followers.dump', 'wb')
+pickle.dump(followers, followersfile)
+followersfile.close()
+friendsfile= open('friends.dump', 'wb')
+pickle.dump(friends, friendsfile)
+friendsfile.close()
+
 while True:
 	# follower list tracking
 	if NOTIFY_FOLLOW == '1' or NOTIFY_UNFOLLOW == '1': # check if updating follower list ist necessary to reduce api calls
-		followers_old = followers
+
+		followersfile = open('followers.dump', 'rb')
+		followers_old = pickle.load(followersfile)
+		followersfile.close()
+
 		print("updating follower list")
 		followers = api1.followers_ids(SCREEN_NAME1)
 		print("comparing lists...")
@@ -58,9 +70,17 @@ while True:
 				print(f_name+' followed.')
 				api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user followed you: @"+f_name)
 
+		followersfile = open('followers.dump', 'wb')
+		pickle.dump(followers, followersfile)
+		followersfile.close()
+
 	# friend list tracking
 	if NOTIFY_FRIEND == '1' or NOTIFY_UNFRIEND == '1': # check if updating friend list is necessary to reduce api calls
-		friends_old = friends
+
+		friendsfile = open('friends.dump', 'rb')
+		friends_old = pickle.load(friendsfile)
+		friendsfile.close()
+
 		print('updating friends list')
 		friends = api1.friends_ids(SCREEN_NAME1)
 		print('comparing lists...')
@@ -77,7 +97,10 @@ while True:
 					print(f_name+' friended.')
 					api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you followed @'+f_name+'.')
 
+		friendsfile= open('friends.dump', 'wb')
+		pickle.dump(friends, friendsfile)
+		friendsfile.close()
+
 	print('sleeping '+ str(CHECK_INTERVALL) +'s from now.')
 	time.sleep(CHECK_INTERVALL)
-
 
