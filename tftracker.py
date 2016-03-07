@@ -111,6 +111,10 @@ while True:
 		pickle.dump(friends, friendsfile)
 		friendsfile.close()
 
-	print('sleeping '+ str(CHECK_INTERVALL) +'s from now.')
-	time.sleep(CHECK_INTERVALL)
+	if CHECK_INTERVALL <= 0:
+		print('stopping script')
+		break
+	else:
+		print('sleeping '+ str(CHECK_INTERVALL) +'s from now.')
+		time.sleep(CHECK_INTERVALL)
 
