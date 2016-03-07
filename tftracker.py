@@ -4,6 +4,7 @@ from tft_options import tftoptions
 import time
 import tweepy
 import pickle
+import os.path
 
 # account 1 is the account that gets tracked
 # account 2 is the account that messages the first as notification
@@ -48,15 +49,19 @@ if CHECK_INTERVALL > 0:
 	senddm('TFTracker started.') 
 	print("tracker started...")
 
-followers = api1.followers_ids(SCREEN_NAME1)
-friends = api1.friends_ids(SCREEN_NAME1)
+if not os.path.exists('followers.dump'):
+	print('followers.dump not existing. creating now.')
+	followers = api1.followers_ids(SCREEN_NAME1)
+	followersfile = open('followers.dump', 'wb')
+	pickle.dump(followers, followersfile)
+	followersfile.close()
 
-followersfile = open('followers.dump', 'wb')
-pickle.dump(followers, followersfile)
-followersfile.close()
-friendsfile= open('friends.dump', 'wb')
-pickle.dump(friends, friendsfile)
-friendsfile.close()
+if not os.path.exists('friends.dump'):
+	print('friends.dump not existing, creating now.')
+	friends = api1.friends_ids(SCREEN_NAME1)
+	friendsfile= open('friends.dump', 'wb')
+	pickle.dump(friends, friendsfile)
+	friendsfile.close()
 
 while True:
 	# follower list tracking
