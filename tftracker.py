@@ -44,8 +44,9 @@ else:
 	auth2.set_access_token(ACCESS_TOKEN2, ACCESS_TOKEN_SECRET2)
 	api2 = tweepy.API(auth2)
 
-senddm('TFTracker started.') 
-print("tracker started...")
+if CHECK_INTERVALL > 0:
+	senddm('TFTracker started.') 
+	print("tracker started...")
 
 followers = api1.followers_ids(SCREEN_NAME1)
 friends = api1.friends_ids(SCREEN_NAME1)
