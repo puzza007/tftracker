@@ -21,6 +21,13 @@ NOTIFY_UNFOLLOW = tftoptions['notify_unfollow']
 NOTIFY_FOLLOW = tftoptions['notify_follow']
 NOTIFY_UNFRIEND = tftoptions['notify_unfriend']
 NOTIFY_FRIEND = tftoptions['notify_friend']
+ONE_ACC_MODE = tftoptions['one_acc_mode']
+
+def senddm(text):
+	if ONE_ACC_MODE == '1':
+		api1.send_direct_message(screen_name = SCREEN_NAME1, text = text) 
+	else:
+		api2.send_direct_message(screen_name = SCREEN_NAME1, text = text) 
 
 # authentificate first account as api1
 print("authentificating first account...")
@@ -28,13 +35,16 @@ auth1 = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth1.set_access_token(ACCESS_TOKEN1, ACCESS_TOKEN_SECRET1)
 api1 = tweepy.API(auth1)
 
-#authentificate second account as api2
-print("authentificating second account...")
-auth2 = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth2.set_access_token(ACCESS_TOKEN2, ACCESS_TOKEN_SECRET2)
-api2 = tweepy.API(auth2)
+if ONE_ACC_MODE == '1':
+	print("one account mode. you will be notified from your first account.")
+else:
+	#authentificate second account as api2
+	print("authentificating second account...")
+	auth2 = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+	auth2.set_access_token(ACCESS_TOKEN2, ACCESS_TOKEN_SECRET2)
+	api2 = tweepy.API(auth2)
 
-api2.send_direct_message(screen_name = SCREEN_NAME1, text = 'TFTracker started. CHECK_INTERVALL='+ str(CHECK_INTERVALL) +'s. NOTIFY_FOLLOW='+NOTIFY_FOLLOW+'. NOTIFY_UNFOLLOW='+NOTIFY_UNFOLLOW+'.') 
+senddm('TFTracker started.') 
 print("tracker started...")
 
 followers = api1.followers_ids(SCREEN_NAME1)
@@ -63,12 +73,12 @@ while True:
 				if f not in followers:
 					f_name = api1.get_user(f).screen_name
 					print(f_name+' unfollowed.')
-					api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user unfollowed you: @"+f_name)
+					senddm("this user unfollowed you: @"+f_name)
 		for f in followers:
 			if f not in followers_old:
 				f_name = api1.get_user(f).screen_name
 				print(f_name+' followed.')
-				api2.send_direct_message(screen_name = SCREEN_NAME1, text = "this user followed you: @"+f_name)
+				senddm("this user followed you: @"+f_name)
 
 		followersfile = open('followers.dump', 'wb')
 		pickle.dump(followers, followersfile)
@@ -89,13 +99,13 @@ while True:
 				if f not in friends:
 					f_name = api1.get_user(f).screen_name
 					print(f_name+' unfriended.')
-					api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you unfollowed @'+f_name+'.')
+					senddm('you unfollowed @'+f_name+'.')
 		if NOTIFY_FRIEND == '1':
 			for f in friends:
 				if f not in friends_old:
 					f_name = api1.get_user(f).screen_name
 					print(f_name+' friended.')
-					api2.send_direct_message(screen_name= SCREEN_NAME1, text = 'you followed @'+f_name+'.')
+					senddm('you followed @'+f_name+'.')
 
 		friendsfile= open('friends.dump', 'wb')
 		pickle.dump(friends, friendsfile)
